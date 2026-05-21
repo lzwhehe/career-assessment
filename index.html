@@ -1089,13 +1089,13 @@ function proceedSection(){
 
 function submitQuiz(){
   showScreen('screen-loading');
+  const hasMBTI=!!selectedMBTI, hasBaZi=!!baziData;
   const msgs=[
     ['正在计算你的 RIASEC 得分…','Holland 职业兴趣理论分析中'],
     [selectedMBTI?`融合 MBTI ${selectedMBTI} 类型数据…`:(baziData?`推算八字命盘 · 日主${baziData.dayMaster}…`:'正在匹配职业数据库…'),
      hasMBTI&&hasBaZi?'三维度综合分析':(hasMBTI||hasBaZi?'双维度综合分析':'RIASEC 单维分析')],
     ['正在生成个性化建议…','即将为你呈现完整报告'],
   ];
-  const hasMBTI=!!selectedMBTI, hasBaZi=!!baziData;
   let i=0;
   const iv=setInterval(()=>{
     if(i<msgs.length){
