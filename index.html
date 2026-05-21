@@ -71,6 +71,16 @@
     }
     .btn-start:hover { transform: translateY(-2px); box-shadow: 0 0 60px rgba(79,70,229,.6); }
 
+    /* ── Back button ── */
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: none; border: none; color: var(--text3);
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      padding: 0; margin-bottom: 20px;
+      transition: color .2s;
+    }
+    .back-btn:hover { color: var(--primary-light); }
+
     /* ── Info form ── */
     .info-card {
       background: var(--card); border: 1px solid var(--border);
@@ -466,6 +476,7 @@
   <!-- ══ USER INFO ══ -->
   <section class="screen" id="screen-info">
     <div class="info-card">
+      <button class="back-btn" onclick="showScreen('screen-intro')">← 返回</button>
       <h2>基本信息</h2>
       <p>帮助我们更好地为你定制结果</p>
       <div class="form-group">
@@ -502,6 +513,7 @@
   <!-- ══ MBTI SELECTION ══ -->
   <section class="screen" id="screen-mbti">
     <div class="mbti-wrap">
+      <button class="back-btn" onclick="showScreen('screen-info')">← 返回</button>
       <h2>你的 MBTI 类型</h2>
       <p>如果你已知道自己的 MBTI，选择后可将其融入职业分析（可跳过）</p>
       <div class="mbti-legend">
@@ -787,8 +799,11 @@ function renderSection(sIdx){
     </div>`;
   });
   const isLast = sIdx===SECTIONS.length-1;
+  const backBtn = sIdx > 0
+    ? `<button class="btn-ghost" onclick="renderSection(${sIdx-1})">← 上一部分</button>`
+    : `<button class="btn-ghost" onclick="showScreen('screen-mbti')">← 返回 MBTI</button>`;
   html += `<div class="quiz-nav">
-    ${sIdx>0?`<button class="btn-ghost" onclick="renderSection(${sIdx-1})">← 上一部分</button>`:'<span></span>'}
+    ${backBtn}
     <button class="btn-primary" id="btn-proceed" onclick="proceedSection()" ${!isSectionComplete(sIdx)?'disabled':''}>
       ${isLast?'提交测评 →':'下一部分 →'}
     </button>
