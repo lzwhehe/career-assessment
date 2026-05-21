@@ -310,6 +310,35 @@
     .mbti-impact-fill { height: 100%; border-radius: 999px; }
     .mbti-impact-val { font-size: 12px; font-weight: 700; text-align: right; }
 
+    /* ── MBTI Switcher (on result page) ── */
+    .mbti-switcher {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 20px 24px; margin-bottom: 40px;
+    }
+    .switcher-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+    .switcher-label { font-size: 14px; font-weight: 700; }
+    .switcher-hint { font-size: 12px; color: var(--text3); }
+    .switcher-groups { display: flex; flex-direction: column; gap: 10px; }
+    .switcher-group-row { display: flex; align-items: center; gap: 8px; }
+    .switcher-group-tag {
+      font-size: 10px; font-weight: 700; letter-spacing: .06em;
+      width: 28px; flex-shrink: 0; text-align: center;
+    }
+    .switcher-types-row { display: flex; gap: 6px; flex-wrap: wrap; }
+    .switcher-type-btn {
+      padding: 6px 11px; border-radius: 8px; font-size: 12px; font-weight: 700;
+      border: 1.5px solid transparent; cursor: pointer; transition: all .15s;
+      background: var(--bg2); color: var(--text2);
+    }
+    .switcher-type-btn:hover { transform: translateY(-1px); }
+    .switcher-type-btn.active { color: #fff; }
+    .switcher-type-btn.none-btn {
+      background: transparent; border-color: var(--border); color: var(--text3);
+      font-weight: 600; font-size: 11px;
+    }
+    .switcher-type-btn.none-btn.active { background: var(--border); color: var(--text); }
+    .switcher-updating { font-size: 12px; color: var(--primary-light); display: none; }
+
     @media (max-width:600px) {
       .traits-grid { grid-template-columns: 1fr; }
       .intro-stats { gap: 20px; }
@@ -327,6 +356,7 @@
       #screen-result { display: block !important; padding: 0; }
       .result-container { padding: 20px 30px 40px; max-width: 100%; }
       .result-actions { display: none !important; }
+      .mbti-switcher { display: none !important; }
       :root {
         --card: #f8f8ff; --bg2: #f1f1fa; --border: #ddd;
         --text: #111; --text2: #444; --text3: #666;
@@ -671,6 +701,7 @@ const CAREER_DB = [
 let userName = '';
 let answers = {};
 let currentSection = 0;
+let rawRiasec = {};
 const sectionStartIdx = [0,12,24,36];
 const sectionEndIdx   = [11,23,35,47];
 
@@ -787,30 +818,37 @@ const TYPE_DESC = {
   C:'你是一个严谨细致、有条不紊的人，在财务、行政、数据管理或合规领域表现稳健出色。',
 };
 
-function generateResult(){
-  /* 1. RIASEC raw (0-100 per dim) */
-  const dimScores={R:0,I:0,A:0,S:0,E:0,C:0}, dimCounts={R:0,I:0,A:0,S:0,E:0,C:0};
-  QUESTIONS.forEach((q,idx)=>{ if(answers[idx]!==undefined){ dimScores[q.dim]+=answers[idx]; dimCounts[q.dim]++; } });
-  const riasec={};
-  Object.keys(dimScores).forEach(d=>{ riasec[d]=Math.round(dimScores[d]/(dimCounts[d]*4)*100); });
+function generateResult(skipScreenChange){
+  /* 1. RIASEC raw (0-100 per dim) — only recalculate from quiz if not switching MBTI */
+  if(!skipScreenChange){
+    const dimScores={R:0,I:0,A:0,S:0,E:0,C:0}, dimCounts={R:0,I:0,A:0,S:0,E:0,C:0};
+    QUESTIONS.forEach((q,idx)=>{ if(answers[idx]!==undefined){ dimScores[q.dim]+=answers[idx]; dimCounts[q.dim]++; } });
+    Object.keys(dimScores).forEach(d=>{ rawRiasec[d]=Math.round(dimScores[d]/(dimCounts[d]*4)*100); });
+  }
 
   /* 2. Blend with MBTI (70% RIASEC + 30% MBTI profile) */
   const norm={};
   if(selectedMBTI && MBTI_RIASEC[selectedMBTI]){
     const mp=MBTI_RIASEC[selectedMBTI];
-    Object.keys(riasec).forEach(d=>{ norm[d]=Math.round(riasec[d]*0.70 + mp[d]*0.30); });
+    Object.keys(rawRiasec).forEach(d=>{ norm[d]=Math.round(rawRiasec[d]*0.70 + mp[d]*0.30); });
   } else {
-    Object.assign(norm, riasec);
+    Object.assign(norm, rawRiasec);
   }
 
   const sorted=Object.entries(norm).sort((a,b)=>b[1]-a[1]);
   const topDims=sorted.slice(0,3).map(x=>x[0]);
-  renderResult(norm, riasec, sorted, topDims);
-  showScreen('screen-result');
+  renderResult(norm, rawRiasec, sorted, topDims);
+  if(!skipScreenChange) showScreen('screen-result');
   setTimeout(()=>{
     sorted.forEach(([dim,score])=>{ const el=document.getElementById('bar-'+dim); if(el) el.style.width=score+'%'; });
     if(selectedMBTI){ Object.keys(MBTI_RIASEC[selectedMBTI]).forEach(d=>{ const el=document.getElementById('mbar-'+d); if(el) el.style.width=MBTI_RIASEC[selectedMBTI][d]+'%'; }); }
-  },100);
+  },80);
+}
+
+function switchMBTI(type){
+  selectedMBTI = (type === '__none__') ? null : type;
+  generateResult(true); // skipScreenChange = true, reuse rawRiasec
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /* ══════════════════════════════════════
@@ -831,6 +869,41 @@ function renderResult(norm, riasec, sorted, topDims){
   const suggestions=getSuggestions(topDims, norm);
   const today=new Date().toLocaleDateString('zh-CN',{year:'numeric',month:'long',day:'numeric'});
   const mbtiColor = selectedMBTI ? GROUP_COLOR[MBTI_INFO[selectedMBTI].group] : null;
+
+  /* ── Build MBTI switcher widget ── */
+  const switcherGroups = [
+    { key:'NT', color:'#3b82f6', types:['INTJ','INTP','ENTJ','ENTP'] },
+    { key:'NF', color:'#22c55e', types:['INFJ','INFP','ENFJ','ENFP'] },
+    { key:'SJ', color:'#f59e0b', types:['ISTJ','ISFJ','ESTJ','ESFJ'] },
+    { key:'SP', color:'#ef4444', types:['ISTP','ISFP','ESTP','ESFP'] },
+  ];
+  const switcherHTML = `
+    <div class="mbti-switcher">
+      <div class="switcher-header">
+        <div class="switcher-label">切换 MBTI · 实时更新结果</div>
+        <div class="switcher-hint">部分人有 2-3 种测试结果，点击任意类型即时对比</div>
+      </div>
+      <div class="switcher-groups">
+        ${switcherGroups.map(g=>`
+          <div class="switcher-group-row">
+            <div class="switcher-group-tag" style="color:${g.color}">${g.key}</div>
+            <div class="switcher-types-row">
+              ${g.types.map(t=>`
+                <button class="switcher-type-btn${selectedMBTI===t?' active':''}"
+                  style="${selectedMBTI===t?`background:${g.color};border-color:${g.color}`:`border-color:${g.color}44;color:${g.color}`}"
+                  onclick="switchMBTI('${t}')"
+                  title="${MBTI_INFO[t].name}：${MBTI_DESC[t]}">${t}</button>
+              `).join('')}
+            </div>
+          </div>`).join('')}
+        <div class="switcher-group-row">
+          <div class="switcher-group-tag" style="color:var(--text3)">—</div>
+          <button class="switcher-type-btn none-btn${!selectedMBTI?' active':''}"
+            onclick="switchMBTI('__none__')">不使用 MBTI</button>
+        </div>
+      </div>
+    </div>
+  `;
 
   let html = `
     <!-- Print header (only shows in PDF) -->
@@ -856,6 +929,8 @@ function renderResult(norm, riasec, sorted, topDims){
       </div>` : ''}
       <p class="result-type-desc">${TYPE_DESC[topDims[0]]}</p>
     </div>
+
+    ${switcherHTML}
   `;
 
   /* MBTI Insight block */
