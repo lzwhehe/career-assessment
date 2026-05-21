@@ -350,6 +350,39 @@
     .switcher-type-btn.none-btn.active { background: var(--border); color: var(--text); }
     .switcher-updating { font-size: 12px; color: var(--primary-light); display: none; }
 
+    /* ── Work Environment Card ── */
+    .work-env-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 24px 28px; margin-bottom: 32px;
+    }
+    .work-env-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .work-env-title { font-size: 1rem; font-weight: 700; }
+    .work-env-subtitle { font-size: 13px; color: var(--text2); margin-bottom: 20px; }
+    .work-env-spectrum {
+      position: relative; height: 14px; border-radius: 99px;
+      background: linear-gradient(to right, #6366f1, #94a3b8, #f59e0b);
+      margin-bottom: 10px;
+    }
+    .work-env-pointer {
+      position: absolute; top: -6px; width: 26px; height: 26px;
+      border-radius: 50%; border: 3px solid #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25);
+      transform: translateX(-50%); transition: left .5s cubic-bezier(.4,0,.2,1);
+    }
+    .work-env-labels {
+      display: flex; justify-content: space-between;
+      font-size: 12px; color: var(--text2); margin-bottom: 18px;
+    }
+    .work-env-verdict {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--bg2); border-radius: 12px; padding: 14px 18px;
+    }
+    .work-env-icon { font-size: 2rem; }
+    .work-env-label { font-size: 1rem; font-weight: 700; }
+    .work-env-reason { font-size: 13px; color: var(--text2); margin-top: 4px; }
+    .work-env-careers { margin-top: 14px; font-size: 13px; color: var(--text2); line-height: 1.7; }
+    .work-env-careers strong { color: var(--text); }
+
     @media (max-width:600px) {
       .traits-grid { grid-template-columns: 1fr; }
       .intro-stats { gap: 20px; }
@@ -379,6 +412,8 @@
       .trait-card { break-inside: avoid; background: #f8f8ff !important; border: 1px solid #ddd !important; }
       .suggestions { background: #f8f8ff !important; border: 1px solid #ddd !important; }
       .mbti-insight { background: #f8f8ff !important; border: 1px solid #ddd !important; }
+      .work-env-card { background: #f8f8ff !important; border: 1px solid #ddd !important; break-inside: avoid; }
+      .work-env-verdict { background: #efefff !important; }
       .section-title { color: #3730a3 !important; }
       .section-title::after { background: #ddd !important; }
       .dim-track { background: #e5e5e5 !important; }
@@ -739,187 +774,159 @@ const QUESTIONS = [
    CAREER DATABASE
 ══════════════════════════════════════ */
 const CAREER_DB = [
-
   /* ── 科技 · 工程 ── */
-  {codes:['I','R'],name:'AI 工程师 / 大模型训练师',icon:'🤖',
-   desc:'研发和训练大规模人工智能模型，优化算法，推动 AI 产品从实验室走向落地。',
+  {codes:['I','R'],name:'AI 工程师',icon:'🤖',sector:'private',
+   desc:'研发和训练大规模 AI 模型，优化算法，推动 AI 产品从实验室走向落地应用。',
    tags:['AI','深度学习','算法'],match:97,hot:true,
    mbtiBoost:['INTJ','INTP','ISTP','ISTJ','ENTP']},
-
-  {codes:['R','I'],name:'软件工程师 / 全栈开发者',icon:'💻',
+  {codes:['R','I'],name:'软件工程师',icon:'💻',sector:'both',
    desc:'设计、编写和维护软件系统，覆盖前后端与基础架构，构建可靠的数字产品。',
    tags:['编程','系统设计','工程'],match:95,
    mbtiBoost:['INTJ','INTP','ISTJ','ISTP','ENTP']},
-
-  {codes:['I','R'],name:'芯片设计工程师',icon:'⚙️',
-   desc:'设计集成电路和半导体芯片，是硬科技和制造业的核心岗位，需求持续增长。',
+  {codes:['I','R'],name:'芯片设计工程师',icon:'⚙️',sector:'both',
+   desc:'设计集成电路和半导体芯片，是硬科技核心岗位，国家重点支持方向。',
    tags:['硬件','EDA','半导体'],match:90,hot:true,
    mbtiBoost:['INTJ','ISTJ','INTP','ISTP']},
-
-  {codes:['I','R'],name:'网络安全工程师',icon:'🔐',
-   desc:'识别和防范数字威胁，保护系统和数据安全，在数字化浪潮中需求极为旺盛。',
+  {codes:['I','R'],name:'网络安全工程师',icon:'🔐',sector:'both',
+   desc:'识别和防范数字威胁，保护系统和数据安全，政府与企业均大量需求。',
    tags:['安全','渗透测试','防护'],match:91,hot:true,
    mbtiBoost:['INTJ','ISTP','ISTJ','INTP']},
-
-  {codes:['R','I'],name:'机器人 / 自动化工程师',icon:'🦾',
+  {codes:['R','I'],name:'机器人工程师',icon:'🦾',sector:'both',
    desc:'设计和开发工业机器人与自动化系统，推动制造业和物流业的智能化转型。',
    tags:['机器人','自动化','硬件'],match:89,hot:true,
    mbtiBoost:['ISTP','ISTJ','INTJ','INTP']},
-
-  {codes:['R','I'],name:'新能源工程师',icon:'⚡',
-   desc:'从事光伏、风电、储能、氢能等清洁能源领域的研发、设计与系统集成工作。',
+  {codes:['R','I'],name:'新能源工程师',icon:'⚡',sector:'both',
+   desc:'从事光伏、风电、储能、氢能等清洁能源领域的研发与系统集成工作。',
    tags:['新能源','碳中和','工程'],match:88,hot:true,
    mbtiBoost:['ISTJ','ISTP','INTJ','ESTJ']},
-
-  {codes:['R','I'],name:'航天 / 航空工程师',icon:'🚀',
-   desc:'参与飞行器、卫星或火箭的设计与研发，是国家战略性新兴产业的重要力量。',
+  {codes:['R','I'],name:'航天工程师',icon:'🛸',sector:'public',
+   desc:'参与飞行器、卫星或火箭的设计与研发，是国家战略性产业的重要力量。',
    tags:['航天','力学','精密工程'],match:87,
    mbtiBoost:['INTJ','ISTJ','ISTP','INTP']},
 
   /* ── 数据 · 分析 ── */
-  {codes:['I','R'],name:'数据科学家 / 算法工程师',icon:'📊',
+  {codes:['I','R'],name:'数据科学家',icon:'📊',sector:'private',
    desc:'利用机器学习和统计方法从海量数据中提取洞见，驱动产品和商业决策。',
    tags:['数据','统计','建模'],match:93,
    mbtiBoost:['INTP','INTJ','ISTJ','ENTJ']},
-
-  {codes:['I','C'],name:'量化交易员 / 金融数据科学家',icon:'📉',
-   desc:'利用数学模型和算法在金融市场寻找交易机会，是金融与科技深度融合的前沿职业。',
+  {codes:['I','C'],name:'量化交易员',icon:'📉',sector:'private',
+   desc:'利用数学模型和算法在金融市场寻找交易机会，金融与科技深度融合的前沿职业。',
    tags:['量化','金融','编程'],match:91,hot:true,
    mbtiBoost:['INTJ','INTP','ISTJ','ENTJ']},
-
-  {codes:['I','S'],name:'用户研究员 / 体验研究专家',icon:'🔍',
-   desc:'通过访谈、实验和数据分析深入理解用户行为，为产品设计提供洞察。',
+  {codes:['I','S'],name:'用户研究员',icon:'🔍',sector:'private',
+   desc:'通过访谈、实验和数据分析深入理解用户行为，为产品设计提供洞察依据。',
    tags:['用研','访谈','数据'],match:87,
    mbtiBoost:['INFJ','INTP','INTJ','INFP']},
 
   /* ── 设计 · 创意 ── */
-  {codes:['A','I'],name:'UX/UI 设计师',icon:'🎨',
+  {codes:['A','I'],name:'UX/UI 设计师',icon:'🎨',sector:'private',
    desc:'设计数字产品的用户体验，平衡美观与功能，让产品更易用、更具吸引力。',
    tags:['设计','创意','用户研究'],match:92,
    mbtiBoost:['INFP','ISFP','ENFP','INTP']},
-
-  {codes:['A','I'],name:'游戏设计师 / 关卡设计师',icon:'🎮',
+  {codes:['A','I'],name:'游戏设计师',icon:'🎮',sector:'private',
    desc:'设计游戏玩法、世界观和关卡体验，是创意与技术结合的热门方向。',
    tags:['游戏','创意','叙事'],match:89,hot:true,
    mbtiBoost:['INTP','INTJ','INFP','ENFP']},
-
-  {codes:['A','E'],name:'短视频导演 / 创意总监',icon:'🎬',
-   desc:'策划和制作短视频、广告或纪录片内容，在内容经济时代拥有广泛的商业价值。',
+  {codes:['A','E'],name:'短视频创作者',icon:'🎬',sector:'private',
+   desc:'策划和制作短视频或纪录片内容，在内容经济时代拥有广泛的商业价值。',
    tags:['导演','创意','制作'],match:88,hot:true,
    mbtiBoost:['ENFP','ENTP','INFP','ESFP']},
-
-  {codes:['A','S'],name:'播客主持人 / 独立创作者',icon:'🎙️',
-   desc:'通过音频、视频或图文持续输出有价值的内容，建立个人品牌和忠实受众。',
+  {codes:['A','S'],name:'播客创作者',icon:'🎙️',sector:'private',
+   desc:'通过音频或视频持续输出有价值的内容，建立个人品牌和忠实受众群体。',
    tags:['创作','表达','社群'],match:85,hot:true,
    mbtiBoost:['ENFP','INFP','ENTP','ENFJ']},
-
-  {codes:['A','S'],name:'内容策略师 / 品牌编辑',icon:'✍️',
+  {codes:['A','S'],name:'内容策略师',icon:'✍️',sector:'private',
    desc:'规划内容生态和叙事方向，通过文字与创意为品牌建立独特的声音和影响力。',
    tags:['文案','品牌','策略'],match:86,
    mbtiBoost:['INFP','ENFP','INFJ','ISFP']},
 
   /* ── 商业 · 管理 ── */
-  {codes:['E','I'],name:'创业者 / AI 产品经理',icon:'💡',
-   desc:'识别市场机会，规划产品路线图，尤其是结合 AI 能力打造下一代产品的核心角色。',
-   tags:['创业','产品','AI应用'],match:94,hot:true,
+  {codes:['E','I'],name:'AI 产品经理',icon:'💡',sector:'private',
+   desc:'规划 AI 产品路线图，识别市场机会，协调技术团队将创意落地为产品。',
+   tags:['产品','AI应用','策略'],match:94,hot:true,
    mbtiBoost:['ENTJ','ENTP','INTJ','ENFP']},
-
-  {codes:['E','C'],name:'商业分析师 / 战略咨询顾问',icon:'📈',
+  {codes:['E','C'],name:'战略咨询顾问',icon:'📈',sector:'private',
    desc:'为企业提供战略建议，分析业务问题，在顶级咨询公司或大厂战略部门发挥影响。',
    tags:['战略','分析','咨询'],match:90,
    mbtiBoost:['ENTJ','ESTJ','INTJ','ISTJ']},
-
-  {codes:['E','S'],name:'市场营销 / 增长运营',icon:'📣',
+  {codes:['E','S'],name:'增长运营',icon:'📣',sector:'private',
    desc:'制定品牌策略和用户增长方案，通过数据驱动的方式实现业务规模化扩张。',
    tags:['增长','营销','数据'],match:87,
    mbtiBoost:['ENFP','ENTP','ESTJ','ENTJ']},
-
-  {codes:['E','C'],name:'跨境电商运营 / 供应链经理',icon:'🌐',
-   desc:'拓展全球市场，管理从生产到末端配送的完整供应链，是对外贸易的新兴核心岗位。',
+  {codes:['E','C'],name:'跨境电商运营',icon:'🌐',sector:'private',
+   desc:'拓展全球市场，管理供应链与跨平台运营，是对外贸易的新兴核心岗位。',
    tags:['跨境','运营','供应链'],match:85,hot:true,
    mbtiBoost:['ESTJ','ENTJ','ISTJ','ESTP']},
-
-  {codes:['C','E'],name:'项目经理 / PMO',icon:'📋',
+  {codes:['C','E'],name:'项目经理',icon:'📋',sector:'both',
    desc:'规划协调项目资源，控制进度与风险，确保跨团队协作高效推进。',
    tags:['管理','规划','协调'],match:86,
    mbtiBoost:['ESTJ','ISTJ','ENTJ','INTJ']},
 
   /* ── 金融 · 法律 ── */
-  {codes:['C','I'],name:'会计师 / 审计师',icon:'💰',
+  {codes:['C','I'],name:'会计师',icon:'💰',sector:'both',
    desc:'负责财务数据处理、分析和报告，确保财务合规，在企业经营中扮演守门人角色。',
    tags:['财务','合规','分析'],match:84,
    mbtiBoost:['ISTJ','ISFJ','ESTJ','INTJ']},
-
-  {codes:['I','E'],name:'法律科技 / 合规专家',icon:'⚖️',
-   desc:'结合法律专业知识与科技工具，为企业提供合规风控服务，是传统法律的新兴进化方向。',
+  {codes:['I','E'],name:'合规专家',icon:'⚖️',sector:'both',
+   desc:'结合法律专业与科技工具，为企业提供合规风控服务，是传统法律的新兴进化方向。',
    tags:['法律','合规','科技'],match:87,hot:true,
    mbtiBoost:['INTJ','ISTJ','ENTJ','INFJ']},
 
   /* ── 医疗 · 科学 ── */
-  {codes:['I','R'],name:'生物信息学家 / 基因工程师',icon:'🧬',
+  {codes:['I','R'],name:'基因工程师',icon:'🧬',sector:'both',
    desc:'运用计算方法分析基因组数据，推动精准医疗、药物研发和生命科学进步。',
    tags:['基因','生信','生物技术'],match:91,hot:true,
    mbtiBoost:['INTJ','INTP','ISTJ','INFJ']},
-
-  {codes:['I','S'],name:'医疗 AI 专家 / 数字健康产品经理',icon:'🏥',
-   desc:'将人工智能应用于医学影像、辅助诊断和医疗信息化，推动医疗行业数智化转型。',
+  {codes:['I','S'],name:'医疗 AI 专家',icon:'🏥',sector:'both',
+   desc:'将人工智能应用于医学影像和辅助诊断，推动医疗行业数智化转型。',
    tags:['医疗','AI','产品'],match:90,hot:true,
    mbtiBoost:['INTJ','INTP','INFJ','ISTJ']},
-
-  {codes:['S','A'],name:'心理咨询师 / 叙事治疗师',icon:'🧠',
-   desc:'通过专业对话和循证方法帮助个体处理心理困扰，随着社会对心理健康重视度提升需求旺盛。',
+  {codes:['S','A'],name:'心理咨询师',icon:'🧠',sector:'both',
+   desc:'通过专业对话和循证方法帮助个体处理心理困扰，心理健康赛道需求持续旺盛。',
    tags:['倾听','共情','助人'],match:89,
    mbtiBoost:['INFJ','INFP','ENFJ','ISFJ']},
 
   /* ── 可持续 · 社会 ── */
-  {codes:['I','S'],name:'ESG 顾问 / 碳中和规划师',icon:'🌱',
-   desc:'帮助企业制定可持续发展战略，推动碳减排和 ESG 信息披露，是 2026 年高需求新兴职业。',
+  {codes:['I','S'],name:'ESG 顾问',icon:'🌱',sector:'both',
+   desc:'帮助企业制定可持续发展战略，推动碳减排和 ESG 信息披露，2026 年高需求职业。',
    tags:['ESG','可持续','碳中和'],match:88,hot:true,
    mbtiBoost:['INFJ','INFP','ENFJ','INTJ']},
-
-  {codes:['S','I'],name:'职业规划师 / 生涯咨询师',icon:'🧭',
+  {codes:['S','I'],name:'职业规划师',icon:'🧭',sector:'both',
    desc:'通过科学评估和深度对话帮助个体厘清职业方向，在不确定时代需求持续增长。',
    tags:['咨询','成长','助人'],match:87,
    mbtiBoost:['INFJ','ENFJ','ISFJ','INFP']},
-
-  {codes:['S','C'],name:'教师 / 在线教育创作者',icon:'📚',
-   desc:'在学校或数字平台传播知识，结合课程设计和内容创作，影响更广泛的学习者群体。',
+  {codes:['S','C'],name:'教师',icon:'📚',sector:'public',
+   desc:'在学校或数字平台传播知识，引导学生成长，稳定且社会影响深远。',
    tags:['教育','耐心','设计'],match:88,
    mbtiBoost:['ISFJ','INFJ','ENFJ','ESFJ']},
-
-  {codes:['S','E'],name:'企业培训师 / 组织发展顾问',icon:'🤝',
+  {codes:['S','E'],name:'企业培训师',icon:'🤝',sector:'both',
    desc:'推动组织能力建设和人才培养，在企业文化和员工效能方面创造持续价值。',
    tags:['培训','OD','管理'],match:85,
    mbtiBoost:['ENFJ','ESFJ','INFJ','ENTJ']},
-
-  {codes:['S','A'],name:'老龄服务设计师 / 适老化产品经理',icon:'🤲',
-   desc:'为银发群体设计产品和服务体验，是人口老龄化背景下快速崛起的蓝海职业方向。',
+  {codes:['S','A'],name:'适老化设计师',icon:'🤲',sector:'both',
+   desc:'为银发群体设计产品和服务体验，是人口老龄化背景下快速崛起的蓝海方向。',
    tags:['服务设计','老龄化','包容性'],match:84,hot:true,
    mbtiBoost:['ISFJ','INFJ','ENFJ','ESFJ']},
 
   /* ── 新兴 · 跨界 ── */
-  {codes:['I','A'],name:'提示词工程师 / AI 应用设计师',icon:'✨',
+  {codes:['I','A'],name:'提示词工程师',icon:'✨',sector:'private',
    desc:'设计和优化与 AI 系统的交互方式，是生成式 AI 时代诞生的全新职业。',
    tags:['AI','提示工程','产品'],match:89,hot:true,
    mbtiBoost:['INTP','ENTP','INFP','INTJ']},
-
-  {codes:['A','R'],name:'电竞职业选手 / 游戏教练',icon:'🕹️',
-   desc:'在专业赛事中竞技或担任战术指导，随着电竞产业成熟化已发展为成熟职业赛道。',
+  {codes:['A','R'],name:'电竞职业选手',icon:'🕹️',sector:'private',
+   desc:'在专业赛事中竞技或担任战术指导，电竞产业成熟化后已发展为成熟职业赛道。',
    tags:['电竞','竞技','策略'],match:82,hot:true,
    mbtiBoost:['ISTP','ESTP','ENTP','ENTJ']},
-
-  {codes:['A','E'],name:'虚拟数字人制作人 / XR 内容创作者',icon:'🥽',
-   desc:'创作 AR/VR/XR 沉浸式体验或数字虚拟人内容，处于元宇宙与实体经济融合的前沿。',
+  {codes:['A','E'],name:'XR 内容创作者',icon:'🥽',sector:'private',
+   desc:'创作 AR/VR/XR 沉浸式体验或数字虚拟人内容，处于元宇宙与实体经济融合前沿。',
    tags:['XR','3D','数字内容'],match:86,hot:true,
    mbtiBoost:['INFP','ENFP','INTP','ISFP']},
-
-  {codes:['I','A'],name:'科技作家 / 知识 IP 运营者',icon:'📝',
-   desc:'将前沿科技或专业领域知识转化为大众可理解的内容，在知识经济时代建立个人影响力。',
+  {codes:['I','A'],name:'科技作家',icon:'📝',sector:'both',
+   desc:'将前沿科技知识转化为大众可理解的内容，在知识经济时代建立个人影响力。',
    tags:['写作','研究','传播'],match:85,
    mbtiBoost:['INTP','INFP','INTJ','INFJ']},
-
-  {codes:['R','E'],name:'建筑师 / 绿色建筑设计师',icon:'🏗️',
-   desc:'设计建筑空间与结构，尤其是结合低碳理念的绿色建筑设计，将成为行业主流。',
+  {codes:['R','E'],name:'绿色建筑设计师',icon:'🏗️',sector:'both',
+   desc:'设计结合低碳理念的建筑空间与结构，将成为建筑行业主流方向。',
    tags:['建筑','设计','绿色'],match:87,
    mbtiBoost:['INTJ','ISTP','ISTJ','INFJ']},
 ];
@@ -1221,6 +1228,58 @@ function renderResult(norm, riasec, sorted, topDims){
     ${selectedMBTI?`<p style="font-size:12px;color:var(--text3);margin:-28px 0 40px">△ 带颜色数字表示 MBTI 融合后的得分变化</p>`:''}
   `;
 
+  /* Work environment judgment */
+  {
+    const score = calcWorkEnvScore(norm);
+    let icon, label, color, reason;
+    if(score < 35){
+      icon='🏛️'; label='适合体制内'; color='#6366f1';
+      reason='你的性格倾向稳健、规范，偏好明确的规则与长期稳定，体制内环境能充分发挥你的优势。';
+    } else if(score > 65){
+      icon='🚀'; label='适合私企 / 创业'; color='#f59e0b';
+      reason='你的驱动力来自创新与竞争，私企的高弹性与快节奏更能激发你的潜力。';
+    } else {
+      icon='⚖️'; label='两者皆宜'; color='#22c55e';
+      reason='你的特质兼顾稳定与开拓，体制内外都能适应，选择时可更看重具体岗位内容与发展空间。';
+    }
+    // Split recommended careers by sector
+    const pubCareers = matched.filter(c=>c.sector==='public').map(c=>c.name);
+    const priCareers = matched.filter(c=>c.sector==='private').map(c=>c.name);
+    const bothCareers = matched.filter(c=>c.sector==='both').map(c=>c.name);
+    const sectorDetail = [
+      pubCareers.length ? `<strong>体制内方向：</strong>${pubCareers.join('、')}` : '',
+      priCareers.length ? `<strong>私企 / 创业：</strong>${priCareers.join('、')}` : '',
+      bothCareers.length ? `<strong>通用：</strong>${bothCareers.join('、')}` : '',
+    ].filter(Boolean).join('<br>');
+
+    html+=`
+    <div class="section-title">工作环境适配诊断</div>
+    <div class="work-env-card">
+      <div class="work-env-header">
+        <span style="font-size:1.2rem">${icon}</span>
+        <span class="work-env-title">${label}</span>
+      </div>
+      <div class="work-env-subtitle">基于你的 RIASEC 六维分布综合推断</div>
+      <div class="work-env-spectrum">
+        <div class="work-env-pointer" id="work-env-pointer"
+          style="left:${score}%;background:${color}"></div>
+      </div>
+      <div class="work-env-labels">
+        <span>🏛️ 体制内</span>
+        <span>⚖️ 两者皆宜</span>
+        <span>🚀 私企 / 创业</span>
+      </div>
+      <div class="work-env-verdict">
+        <div class="work-env-icon">${icon}</div>
+        <div>
+          <div class="work-env-label" style="color:${color}">${label}</div>
+          <div class="work-env-reason">${reason}</div>
+        </div>
+      </div>
+      ${sectorDetail ? `<div class="work-env-careers">${sectorDetail}</div>` : ''}
+    </div>`;
+  }
+
   /* Career cards */
   html+=`
     <div class="section-title">为你推荐的职业方向</div>
@@ -1278,6 +1337,13 @@ function renderResult(norm, riasec, sorted, topDims){
   `;
 
   document.getElementById('result-container').innerHTML = html;
+}
+
+function calcWorkEnvScore(norm){
+  // Returns 0-100: 0=纯体制内, 50=两者皆宜, 100=纯私企
+  const pub = norm.C*0.40 + norm.S*0.25 + norm.R*0.15 + (100-norm.E)*0.10 + (100-norm.A)*0.10;
+  const pri = norm.E*0.40 + norm.I*0.25 + norm.A*0.20 + (100-norm.C)*0.10 + (100-norm.S)*0.05;
+  return Math.round(pri / (pub + pri) * 100);
 }
 
 function getChallenges(topDims){
