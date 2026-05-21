@@ -395,6 +395,68 @@
     }
     .print-header { display: none; }
 
+    /* ── BaZi screen ── */
+    .bazi-wrap { max-width: 680px; width: 100%; }
+    .bazi-wrap h2 { font-size: 1.8rem; font-weight: 800; text-align: center; margin-bottom: 8px; }
+    .bazi-wrap > p { color: var(--text2); text-align: center; margin-bottom: 28px; font-size: 15px; line-height: 1.6; }
+    .bazi-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 28px; margin-bottom: 16px; }
+    .bazi-card-title { font-size: 13px; font-weight: 700; color: var(--text3); letter-spacing: .06em; margin-bottom: 16px; }
+    .bazi-date-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    .bazi-field label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 6px; }
+    .bazi-field select, .bazi-field input[type=number] {
+      width: 100%; padding: 10px 12px; background: var(--bg2);
+      border: 1px solid var(--border); border-radius: 10px;
+      color: var(--text); font-size: 14px; appearance: none;
+      transition: border-color .2s;
+    }
+    .bazi-field select:focus, .bazi-field input[type=number]:focus { outline: none; border-color: var(--primary-light); }
+    .hour-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 4px; }
+    .hour-btn {
+      padding: 10px 6px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--bg2); cursor: pointer; text-align: center;
+      transition: all .15s; color: var(--text);
+    }
+    .hour-btn:hover { border-color: var(--primary-light); background: rgba(79,70,229,.1); }
+    .hour-btn.selected { background: rgba(79,70,229,.2); border-color: var(--primary); color: #e0e7ff; }
+    .hour-name { font-size: 13px; font-weight: 700; }
+    .hour-range { font-size: 10px; color: var(--text3); margin-top: 2px; }
+    .hour-btn.selected .hour-range { color: var(--primary-light); }
+    .bazi-actions { display: flex; gap: 12px; margin-top: 8px; }
+
+    /* ── BaZi result card ── */
+    .bazi-result-card {
+      background: linear-gradient(135deg, rgba(139,92,246,.08), rgba(6,182,212,.05));
+      border: 1px solid rgba(139,92,246,.3);
+      border-radius: 16px; padding: 24px; margin-bottom: 40px;
+    }
+    .bazi-result-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+    .bazi-pillars { display: flex; gap: 8px; flex-wrap: wrap; }
+    .bazi-pillar {
+      text-align: center; background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 14px; min-width: 56px;
+    }
+    .bazi-pillar-label { font-size: 10px; color: var(--text3); margin-bottom: 4px; }
+    .bazi-pillar-stem { font-size: 1.2rem; font-weight: 800; }
+    .bazi-pillar-branch { font-size: 1rem; font-weight: 700; color: var(--text2); }
+    .bazi-pillar-element { font-size: 10px; margin-top: 4px; font-weight: 600; }
+    .bazi-daymaster-badge {
+      padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 700;
+      display: inline-flex; align-items: center; gap: 6px; margin-bottom: 14px;
+    }
+    .element-bars { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .element-bar-item { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+    .element-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .bazi-career-note {
+      background: var(--bg2); border-radius: 10px; padding: 12px 16px;
+      font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 0;
+    }
+    .bazi-traits { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+    .bazi-trait-tag {
+      padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600;
+      background: rgba(139,92,246,.15); border: 1px solid rgba(139,92,246,.3); color: #c4b5fd;
+    }
+    @media print { .bazi-result-card { background: #f8f8ff !important; border-color: #ddd !important; } }
+
     /* ── History section on intro screen ── */
     .history-section {
       max-width: 900px; width: 100%; margin-top: 56px;
@@ -524,8 +586,50 @@
       </div>
       <div class="mbti-groups" id="mbti-grid"></div>
       <div class="mbti-actions">
-        <button class="btn-skip" onclick="skipMBTI()">跳过，直接测评</button>
-        <button class="btn-confirm" id="btn-mbti-confirm" disabled onclick="confirmMBTI()">确认选择，开始测评 →</button>
+        <button class="btn-skip" onclick="skipMBTI()">跳过</button>
+        <button class="btn-confirm" id="btn-mbti-confirm" disabled onclick="confirmMBTI()">确认，下一步 →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ BAZI ══ -->
+  <section class="screen" id="screen-bazi">
+    <div class="bazi-wrap">
+      <button class="back-btn" onclick="showScreen('screen-mbti')">← 返回</button>
+      <h2>八字命理分析</h2>
+      <p>通过出生日期推算命盘，结合五行格局探索你的职业天赋。<br>所有信息仅用于本地分析，不会上传。</p>
+      <div class="bazi-card">
+        <div class="bazi-card-title">出生日期</div>
+        <div class="bazi-date-row">
+          <div class="bazi-field">
+            <label>年份</label>
+            <input type="number" id="bazi-year" min="1930" max="2010" placeholder="如 1995" />
+          </div>
+          <div class="bazi-field">
+            <label>月份</label>
+            <select id="bazi-month">
+              <option value="">选择月份</option>
+              <option value="1">1月</option><option value="2">2月</option>
+              <option value="3">3月</option><option value="4">4月</option>
+              <option value="5">5月</option><option value="6">6月</option>
+              <option value="7">7月</option><option value="8">8月</option>
+              <option value="9">9月</option><option value="10">10月</option>
+              <option value="11">11月</option><option value="12">12月</option>
+            </select>
+          </div>
+          <div class="bazi-field">
+            <label>日期</label>
+            <input type="number" id="bazi-day" min="1" max="31" placeholder="如 15" />
+          </div>
+        </div>
+      </div>
+      <div class="bazi-card">
+        <div class="bazi-card-title">出生时辰（可选，影响时柱分析）</div>
+        <div class="hour-grid" id="hour-grid"></div>
+      </div>
+      <div class="bazi-actions">
+        <button class="btn-skip" onclick="skipBaZi()">跳过此步骤</button>
+        <button class="btn-confirm" id="btn-bazi-confirm" onclick="confirmBaZi()">生成命盘，开始测评 →</button>
       </div>
     </div>
   </section>
@@ -667,8 +771,146 @@ function selectMBTI(type){
   btn.style.borderColor = color;
   document.getElementById('btn-mbti-confirm').disabled = false;
 }
-function skipMBTI(){ selectedMBTI=null; startQuiz(); }
-function confirmMBTI(){ startQuiz(); }
+function skipMBTI(){ selectedMBTI=null; showScreen('screen-bazi'); }
+function confirmMBTI(){ showScreen('screen-bazi'); }
+
+/* ══════════════════════════════════════
+   BAZI ENGINE
+══════════════════════════════════════ */
+const STEMS   = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const BRANCHES= ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const STEM_EL = ['木','木','火','火','土','土','金','金','水','水']; // 天干对应五行
+const BRANCH_EL=['水','土','木','木','土','火','火','土','金','金','土','水'];
+const EL_COLOR = { '木':'#22c55e','火':'#ef4444','土':'#f59e0b','金':'#94a3b8','水':'#3b82f6' };
+const EL_BG    = { '木':'rgba(34,197,94,.15)','火':'rgba(239,68,68,.15)','土':'rgba(245,158,11,.15)','金':'rgba(148,163,184,.15)','水':'rgba(59,130,246,.15)' };
+
+const HOUR_DEFS = [
+  {name:'子',range:'23-1时',branch:0},{name:'丑',range:'1-3时',branch:1},
+  {name:'寅',range:'3-5时',branch:2},{name:'卯',range:'5-7时',branch:3},
+  {name:'辰',range:'7-9时',branch:4},{name:'巳',range:'9-11时',branch:5},
+  {name:'午',range:'11-13时',branch:6},{name:'未',range:'13-15时',branch:7},
+  {name:'申',range:'15-17时',branch:8},{name:'酉',range:'17-19时',branch:9},
+  {name:'戌',range:'19-21时',branch:10},{name:'亥',range:'21-23时',branch:11},
+];
+
+/* Day Master → RIASEC 权重 (八字研究 + 职业适配综合) */
+const DAYMASTER_RIASEC = {
+  '甲':{ R:35,I:55,A:60,S:50,E:82,C:28 }, // 开拓型领袖
+  '乙':{ R:25,I:50,A:82,S:72,E:45,C:35 }, // 柔性外交艺术
+  '丙':{ R:28,I:38,A:72,S:65,E:88,C:18 }, // 热情表达领导
+  '丁':{ R:28,I:72,A:55,S:55,E:50,C:62 }, // 精密战略思考
+  '戊':{ R:62,I:45,A:28,S:55,E:60,C:82 }, // 稳健可靠务实
+  '己':{ R:45,I:50,A:45,S:78,E:38,C:72 }, // 细致服务奉献
+  '庚':{ R:72,I:65,A:28,S:22,E:78,C:65 }, // 果断竞争权威
+  '辛':{ R:38,I:62,A:78,S:38,E:48,C:72 }, // 精致完美艺工
+  '壬':{ R:32,I:88,A:55,S:42,E:60,C:48 }, // 智慧流动变通
+  '癸':{ R:22,I:78,A:72,S:62,E:32,C:45 }, // 深邃直觉创意
+};
+
+const DAYMASTER_TRAITS = {
+  '甲':['具有开拓精神','追求独立自主','天生的行动派','有强烈的进取心'],
+  '乙':['适应能力极强','善于借力使力','温和而有韧性','具有亲和力'],
+  '丙':['热情开朗大方','具有感染力','喜欢舞台与展示','慷慨有魅力'],
+  '丁':['思维精密细腻','具有持续专注力','内敛而有谋略','善于精益求精'],
+  '戊':['稳重踏实可靠','具有强大包容力','处事沉稳大气','重信守诺'],
+  '己':['心思细腻体贴','善于照顾他人','务实而勤劳','注重细节品质'],
+  '庚':['刚毅果断有魄力','具有强烈执行力','敢于承担挑战','追求卓越标准'],
+  '辛':['追求精致完美','具有独特审美','善于分析提炼','重视品质格调'],
+  '壬':['思维活跃灵动','适应变化能力强','善于洞察趋势','具有大局观'],
+  '癸':['直觉敏锐深刻','善于感知他人','具有艺术天赋','追求精神深度'],
+};
+
+const DAYMASTER_CAREER = {
+  '甲':'最适合创业、管理、项目领导、军事、政治等开拓性领域，甲木如参天大树，需要广阔的发展空间。',
+  '乙':'最适合外交、艺术设计、咨询、公关、教育等柔性领域，乙木如藤蔓善于借势，在灵活环境中最能发挥。',
+  '丙':'最适合营销、演艺、销售、管理、公共事务等展示性领域，丙火如太阳，天生有感召力与影响力。',
+  '丁':'最适合研究、金融、精密制造、咨询、战略规划等领域，丁火如烛，能在专注深耕中发光发热。',
+  '戊':'最适合不动产、行政管理、金融投资、建筑、教育等领域，戊土如山岳，以稳健可靠见长。',
+  '己':'最适合医疗、农业、教育、服务业、行政等领域，己土如田地，善于滋养培育，在服务型工作中成就感最高。',
+  '庚':'最适合法律、军事、科技工程、金融交易、体育竞技等竞争性领域，庚金如利剑，需要挑战与突破。',
+  '辛':'最适合珠宝设计、医学、精密工程、艺术、财务等精细领域，辛金如宝石，越磨砺越出彩。',
+  '壬':'最适合贸易、传媒、科研、咨询、互联网等流动变化的领域，壬水如江河，在宽广自由的环境中展现智慧。',
+  '癸':'最适合心理咨询、艺术创作、哲学研究、医学、写作等深度领域，癸水如雨露，善于滋润人心。',
+};
+
+let baziData = null; // { yearPillar, monthPillar, dayPillar, hourPillar, dayMaster, element, elementCounts }
+let selectedHour = null;
+
+/* Build hour buttons */
+(function buildHourGrid(){
+  const grid = document.getElementById('hour-grid');
+  if(!grid) return;
+  grid.innerHTML = HOUR_DEFS.map((h,i)=>`
+    <button class="hour-btn" id="hour-btn-${i}" onclick="selectHour(${i})">
+      <div class="hour-name">${h.name}时</div>
+      <div class="hour-range">${h.range}</div>
+    </button>`).join('');
+})();
+
+function selectHour(idx){
+  selectedHour = idx;
+  document.querySelectorAll('.hour-btn').forEach((b,i)=>b.classList.toggle('selected', i===idx));
+}
+
+function skipBaZi(){ baziData=null; startQuiz(); }
+
+function confirmBaZi(){
+  const y = parseInt(document.getElementById('bazi-year').value);
+  const m = parseInt(document.getElementById('bazi-month').value);
+  const d = parseInt(document.getElementById('bazi-day').value);
+  if(!y||!m||!d||y<1930||y>2010||d<1||d>31){
+    alert('请填写完整且有效的出生年月日（1930-2010年）');
+    return;
+  }
+  baziData = calcBaZi(y, m, d, selectedHour);
+  startQuiz();
+}
+
+function calcBaZi(y, m, d, hourIdx){
+  /* ── 年柱：立春(约2月4日)前算上一年 ── */
+  const baziYear = (m < 2 || (m === 2 && d < 4)) ? y - 1 : y;
+  const ysi = ((baziYear - 1984) % 10 + 10) % 10; // 1984=甲子年
+  const ybi = ((baziYear - 1984) % 12 + 12) % 12;
+
+  /* ── 月柱：月支固定，月干由年干推算(五虎遁年) ── */
+  // 月支: 寅(2)开始于2月,每月+1,注意子(0)=11月,丑(1)=12月/1月
+  const monthBranchTable = [1,2,3,4,5,6,7,8,9,10,11,0]; // Jan-Dec
+  const mbi = monthBranchTable[m - 1];
+  // 月干起始: 甲己年→寅月起丙(2), 乙庚→戊(4), 丙辛→庚(6), 丁壬→壬(8), 戊癸→甲(0)
+  const monthStemBase = [2,4,6,8,0][ysi % 5];
+  const msi = (monthStemBase + ((mbi - 2 + 12) % 12)) % 10;
+
+  /* ── 日柱：从1900-01-31(甲子日)计算 ── */
+  const ref = new Date(1900, 0, 31);
+  const birth = new Date(y, m - 1, d);
+  const daysDiff = Math.round((birth - ref) / 86400000);
+  const dsi = ((daysDiff % 10) + 10) % 10;
+  const dbi = ((daysDiff % 12) + 12) % 12;
+
+  /* ── 时柱：五鼠遁日起时 ── */
+  let hsi = null, hbi = null;
+  if(hourIdx !== null){
+    hbi = HOUR_DEFS[hourIdx].branch;
+    // 甲己日→子时甲(0), 乙庚→丙(2), 丙辛→戊(4), 丁壬→庚(6), 戊癸→壬(8)
+    const hourStemBase = [0,2,4,6,8][dsi % 5];
+    hsi = (hourStemBase + hbi) % 10;
+  }
+
+  /* ── 统计五行 ── */
+  const pillars = [
+    { label:'年柱', si:ysi, bi:ybi },
+    { label:'月柱', si:msi, bi:mbi },
+    { label:'日柱', si:dsi, bi:dbi },
+    ...(hsi!==null ? [{ label:'时柱', si:hsi, bi:hbi }] : []),
+  ];
+  const counts = { '木':0,'火':0,'土':0,'金':0,'水':0 };
+  pillars.forEach(p=>{ counts[STEM_EL[p.si]]++; counts[BRANCH_EL[p.bi]]++; });
+
+  const dayMaster = STEMS[dsi];
+  const element = STEM_EL[dsi];
+
+  return { pillars, dayMaster, element, counts };
+}
 
 /* ══════════════════════════════════════
    QUIZ DATA
@@ -801,7 +1043,7 @@ function renderSection(sIdx){
   const isLast = sIdx===SECTIONS.length-1;
   const backBtn = sIdx > 0
     ? `<button class="btn-ghost" onclick="renderSection(${sIdx-1})">← 上一部分</button>`
-    : `<button class="btn-ghost" onclick="showScreen('screen-mbti')">← 返回 MBTI</button>`;
+    : `<button class="btn-ghost" onclick="showScreen('screen-bazi')">← 返回命盘</button>`;
   html += `<div class="quiz-nav">
     ${backBtn}
     <button class="btn-primary" id="btn-proceed" onclick="proceedSection()" ${!isSectionComplete(sIdx)?'disabled':''}>
@@ -849,9 +1091,11 @@ function submitQuiz(){
   showScreen('screen-loading');
   const msgs=[
     ['正在计算你的 RIASEC 得分…','Holland 职业兴趣理论分析中'],
-    [selectedMBTI?`融合 MBTI ${selectedMBTI} 类型数据…`:'正在匹配职业数据库…','双维度综合分析'],
+    [selectedMBTI?`融合 MBTI ${selectedMBTI} 类型数据…`:(baziData?`推算八字命盘 · 日主${baziData.dayMaster}…`:'正在匹配职业数据库…'),
+     hasMBTI&&hasBaZi?'三维度综合分析':(hasMBTI||hasBaZi?'双维度综合分析':'RIASEC 单维分析')],
     ['正在生成个性化建议…','即将为你呈现完整报告'],
   ];
+  const hasMBTI=!!selectedMBTI, hasBaZi=!!baziData;
   let i=0;
   const iv=setInterval(()=>{
     if(i<msgs.length){
@@ -890,11 +1134,20 @@ function generateResult(skipScreenChange){
     Object.keys(dimScores).forEach(d=>{ rawRiasec[d]=Math.round(dimScores[d]/(dimCounts[d]*4)*100); });
   }
 
-  /* 2. Blend with MBTI (70% RIASEC + 30% MBTI profile) */
+  /* 2. Three-way blend: RIASEC × MBTI × BaZi */
   const norm={};
-  if(selectedMBTI && MBTI_RIASEC[selectedMBTI]){
+  const hasMBTI = selectedMBTI && MBTI_RIASEC[selectedMBTI];
+  const hasBaZi = baziData && DAYMASTER_RIASEC[baziData.dayMaster];
+  if(hasMBTI && hasBaZi){
+    // 60% RIASEC + 25% MBTI + 15% BaZi
+    const mp=MBTI_RIASEC[selectedMBTI], bp=DAYMASTER_RIASEC[baziData.dayMaster];
+    Object.keys(rawRiasec).forEach(d=>{ norm[d]=Math.round(rawRiasec[d]*.60 + mp[d]*.25 + bp[d]*.15); });
+  } else if(hasMBTI){
     const mp=MBTI_RIASEC[selectedMBTI];
-    Object.keys(rawRiasec).forEach(d=>{ norm[d]=Math.round(rawRiasec[d]*0.70 + mp[d]*0.30); });
+    Object.keys(rawRiasec).forEach(d=>{ norm[d]=Math.round(rawRiasec[d]*.70 + mp[d]*.30); });
+  } else if(hasBaZi){
+    const bp=DAYMASTER_RIASEC[baziData.dayMaster];
+    Object.keys(rawRiasec).forEach(d=>{ norm[d]=Math.round(rawRiasec[d]*.75 + bp[d]*.25); });
   } else {
     Object.assign(norm, rawRiasec);
   }
@@ -1000,6 +1253,51 @@ function renderResult(norm, riasec, sorted, topDims){
 
     ${switcherHTML}
   `;
+
+  /* BaZi result card */
+  if(baziData){
+    const { pillars, dayMaster, element, counts } = baziData;
+    const elColor = EL_COLOR[element], elBg = EL_BG[element];
+    const totalEl = Object.values(counts).reduce((a,b)=>a+b,0);
+    const sortedEl = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+    html += `
+      <div class="section-title">八字命盘 · 事业格局分析</div>
+      <div class="bazi-result-card">
+        <div class="bazi-result-header">
+          <div>
+            <div class="bazi-daymaster-badge" style="background:${elBg};border:1px solid ${elColor}44;color:${elColor}">
+              <span style="font-size:1.4rem;font-weight:900">${dayMaster}</span>
+              <span>日主 · ${element}行 · ${DAYMASTER_TRAITS[dayMaster][0]}</span>
+            </div>
+            <div class="bazi-pillars">
+              ${pillars.map(p=>`
+                <div class="bazi-pillar">
+                  <div class="bazi-pillar-label">${p.label}</div>
+                  <div class="bazi-pillar-stem" style="color:${EL_COLOR[STEM_EL[p.si]]}">${STEMS[p.si]}</div>
+                  <div class="bazi-pillar-branch">${BRANCHES[p.bi]}</div>
+                  <div class="bazi-pillar-element" style="color:${EL_COLOR[STEM_EL[p.si]]}">${STEM_EL[p.si]}</div>
+                </div>`).join('')}
+            </div>
+          </div>
+        </div>
+        <div style="font-size:13px;font-weight:700;color:var(--text3);margin-bottom:8px;letter-spacing:.05em">五行分布</div>
+        <div class="element-bars">
+          ${sortedEl.map(([el,cnt])=>cnt>0?`
+            <div class="element-bar-item">
+              <div class="element-dot" style="background:${EL_COLOR[el]}"></div>
+              <span style="color:${EL_COLOR[el]};font-weight:700">${el}</span>
+              <span style="color:var(--text2)">${'▮'.repeat(cnt)}${'▯'.repeat(Math.max(0,4-cnt))}</span>
+              <span style="color:var(--text3);font-size:11px">${cnt}/${totalEl}</span>
+            </div>`:''
+          ).join('')}
+        </div>
+        <div class="bazi-career-note">${DAYMASTER_CAREER[dayMaster]}</div>
+        <div class="bazi-traits">
+          ${DAYMASTER_TRAITS[dayMaster].map(t=>`<span class="bazi-trait-tag">${t}</span>`).join('')}
+        </div>
+      </div>
+    `;
+  }
 
   /* MBTI Insight block */
   if(selectedMBTI){
@@ -1156,7 +1454,7 @@ function exportPDF(){
 }
 
 function retake(){
-  answers={}; currentSection=0; selectedMBTI=null; rawRiasec={};
+  answers={}; currentSection=0; selectedMBTI=null; rawRiasec={}; baziData=null; selectedHour=null;
   document.querySelectorAll('.mbti-btn').forEach(b=>{ b.classList.remove('selected'); b.style.background='var(--card)'; b.style.borderColor=''; });
   document.getElementById('btn-mbti-confirm').disabled=true;
   checkHistory();
