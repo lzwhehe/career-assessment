@@ -384,6 +384,54 @@
       .mbti-result-badge { background: rgba(0,0,0,.05) !important; }
     }
     .print-header { display: none; }
+
+    /* ── History section on intro screen ── */
+    .history-section {
+      max-width: 900px; width: 100%; margin-top: 56px;
+      padding-top: 40px; border-top: 1px solid var(--border);
+    }
+    .history-heading {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; flex-wrap: wrap; gap: 10px;
+    }
+    .history-heading h3 { font-size: 1rem; font-weight: 700; color: var(--text2); }
+    .history-clear-btn {
+      font-size: 12px; color: var(--text3); background: none; border: none;
+      cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: color .2s;
+    }
+    .history-clear-btn:hover { color: #ef4444; }
+    .history-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+    .history-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 18px 20px; cursor: pointer;
+      transition: transform .2s, border-color .2s; position: relative;
+      text-align: left;
+    }
+    .history-card:hover { transform: translateY(-3px); border-color: var(--primary-light); }
+    .history-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .history-name { font-size: 15px; font-weight: 700; }
+    .history-date { font-size: 11px; color: var(--text3); margin-top: 3px; }
+    .history-delete-btn {
+      background: none; border: none; color: var(--text3); font-size: 16px;
+      cursor: pointer; padding: 0 4px; line-height: 1; transition: color .2s;
+      flex-shrink: 0;
+    }
+    .history-delete-btn:hover { color: #ef4444; }
+    .history-dims { display: flex; gap: 6px; margin-bottom: 10px; }
+    .history-dim-dot {
+      width: 30px; height: 30px; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 13px;
+    }
+    .history-mbti-tag {
+      display: inline-block; padding: 3px 10px; border-radius: 999px;
+      font-size: 11px; font-weight: 700; margin-bottom: 10px;
+    }
+    .history-careers { font-size: 12px; color: var(--text3); line-height: 1.6; }
+    .history-view-hint {
+      font-size: 11px; color: var(--primary-light); margin-top: 12px;
+      font-weight: 600; letter-spacing: .04em;
+    }
   </style>
 </head>
 <body>
@@ -410,8 +458,9 @@
         <div class="stat"><div class="stat-num">6</div><div class="stat-label">维度分析</div></div>
         <div class="stat"><div class="stat-num">PDF</div><div class="stat-label">报告导出</div></div>
       </div>
-      <button class="btn-start" onclick="showScreen('screen-info')">开始测评 →</button>
+      <button class="btn-start" onclick="showScreen('screen-info')">开始新测评 →</button>
     </div>
+    <div class="history-section" id="history-section" style="display:none"></div>
   </section>
 
   <!-- ══ USER INFO ══ -->
@@ -837,8 +886,12 @@ function generateResult(skipScreenChange){
 
   const sorted=Object.entries(norm).sort((a,b)=>b[1]-a[1]);
   const topDims=sorted.slice(0,3).map(x=>x[0]);
+  const topCareers=getMatchedCareers(topDims).slice(0,3).map(c=>c.name);
   renderResult(norm, rawRiasec, sorted, topDims);
-  if(!skipScreenChange) showScreen('screen-result');
+  if(!skipScreenChange){
+    showScreen('screen-result');
+    saveResult(norm, topDims, topCareers);
+  }
   setTimeout(()=>{
     sorted.forEach(([dim,score])=>{ const el=document.getElementById('bar-'+dim); if(el) el.style.width=score+'%'; });
     if(selectedMBTI){ Object.keys(MBTI_RIASEC[selectedMBTI]).forEach(d=>{ const el=document.getElementById('mbar-'+d); if(el) el.style.width=MBTI_RIASEC[selectedMBTI][d]+'%'; }); }
@@ -1088,11 +1141,116 @@ function exportPDF(){
 }
 
 function retake(){
-  answers={}; currentSection=0; selectedMBTI=null;
+  answers={}; currentSection=0; selectedMBTI=null; rawRiasec={};
   document.querySelectorAll('.mbti-btn').forEach(b=>{ b.classList.remove('selected'); b.style.background='var(--card)'; b.style.borderColor=''; });
   document.getElementById('btn-mbti-confirm').disabled=true;
+  checkHistory();
   showScreen('screen-intro');
 }
+
+/* ══════════════════════════════════════
+   HISTORY — localStorage persistence
+══════════════════════════════════════ */
+const HISTORY_KEY = 'career_assessment_history';
+const MAX_HISTORY = 6;
+
+function saveResult(norm, topDims, topCareers){
+  const record = {
+    id: Date.now(),
+    date: new Date().toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric' }),
+    userName,
+    selectedMBTI,
+    rawRiasec: { ...rawRiasec },
+    norm: { ...norm },
+    topDims,
+    topCareers,
+  };
+  let history = loadHistory();
+  // Avoid saving exact duplicate within same session (same name + same day)
+  const today = record.date;
+  history = history.filter(h => !(h.userName === userName && h.date === today));
+  history.unshift(record);
+  if (history.length > MAX_HISTORY) history = history.slice(0, MAX_HISTORY);
+  try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); } catch(e) {}
+  checkHistory();
+}
+
+function loadHistory(){
+  try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch(e) { return []; }
+}
+
+function deleteSavedResult(id, event){
+  event.stopPropagation();
+  let history = loadHistory().filter(h => h.id !== id);
+  try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); } catch(e) {}
+  checkHistory();
+}
+
+function clearAllHistory(){
+  if (!confirm('确认删除所有历史记录？')) return;
+  try { localStorage.removeItem(HISTORY_KEY); } catch(e) {}
+  checkHistory();
+}
+
+function viewSavedResult(id){
+  const record = loadHistory().find(h => h.id === id);
+  if (!record) return;
+  // Restore state
+  userName = record.userName;
+  selectedMBTI = record.selectedMBTI;
+  rawRiasec = { ...record.rawRiasec };
+  answers = {}; // quiz answers not stored, but rawRiasec is enough to regenerate
+  generateResult(true);
+  showScreen('screen-result');
+}
+
+function checkHistory(){
+  const history = loadHistory();
+  const section = document.getElementById('history-section');
+  if (!section) return;
+  if (history.length === 0) { section.style.display = 'none'; return; }
+
+  section.style.display = 'block';
+  section.innerHTML = `
+    <div class="history-heading">
+      <h3>历史测评记录（${history.length} 条）</h3>
+      <button class="history-clear-btn" onclick="clearAllHistory()">清除全部</button>
+    </div>
+    <div class="history-cards">
+      ${history.map(r => {
+        const mbtiColor = r.selectedMBTI ? GROUP_COLOR[MBTI_INFO[r.selectedMBTI]?.group] : null;
+        return `
+          <div class="history-card" onclick="viewSavedResult(${r.id})">
+            <div class="history-card-top">
+              <div>
+                <div class="history-name">${r.userName}</div>
+                <div class="history-date">${r.date}</div>
+              </div>
+              <button class="history-delete-btn" onclick="deleteSavedResult(${r.id}, event)" title="删除">×</button>
+            </div>
+            <div class="history-dims">
+              ${r.topDims.map(d => `
+                <div class="history-dim-dot" style="background:${DIM_META[d].bg};color:${DIM_META[d].color}">${d}</div>
+              `).join('')}
+              <span style="font-size:13px;color:var(--text2);align-self:center;margin-left:4px">
+                ${r.topDims.map(d => DIM_META[d].name).join(' · ')}
+              </span>
+            </div>
+            ${r.selectedMBTI ? `
+              <div class="history-mbti-tag" style="background:${mbtiColor}18;color:${mbtiColor};border:1px solid ${mbtiColor}44">
+                ${r.selectedMBTI} · ${MBTI_INFO[r.selectedMBTI]?.name || ''}
+              </div>` : ''}
+            <div class="history-careers">${r.topCareers.slice(0,3).join(' · ')}</div>
+            <div class="history-view-hint">点击查看完整报告 →</div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+// Init history on page load
+document.addEventListener('DOMContentLoaded', checkHistory);
 </script>
 </body>
 </html>
