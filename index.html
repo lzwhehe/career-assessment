@@ -265,6 +265,7 @@
     .career-tags { display: flex; flex-wrap: wrap; gap: 6px; }
     .career-tag { padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; background: var(--bg2); color: var(--text3); border: 1px solid var(--border); }
     .mbti-boost-tag { background: rgba(34,197,94,.1); border-color: rgba(34,197,94,.3); color: #86efac; }
+    .hot-tag { background: rgba(239,68,68,.12); border-color: rgba(239,68,68,.35); color: #fca5a5; }
 
     /* Traits */
     .traits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 40px; }
@@ -738,22 +739,189 @@ const QUESTIONS = [
    CAREER DATABASE
 ══════════════════════════════════════ */
 const CAREER_DB = [
-  {codes:['R','I'],name:'软件工程师 / 开发者',icon:'💻',desc:'设计、编写和维护软件系统，解决技术难题，构建数字产品。',tags:['技术','逻辑','编程'],match:95,mbtiBoost:['INTJ','INTP','ISTJ','ISTP','ENTJ','ENTP']},
-  {codes:['I','R'],name:'数据科学家 / 分析师',icon:'📊',desc:'利用统计和机器学习方法从海量数据中提取洞见，支持商业决策。',tags:['数据','统计','建模'],match:90,mbtiBoost:['INTP','INTJ','ISTJ','ENTJ']},
-  {codes:['I','C'],name:'医学研究员 / 生物学家',icon:'🔬',desc:'在实验室或研究机构开展科学研究，推动医学或生命科学进步。',tags:['研究','科学','实验'],match:88,mbtiBoost:['INTP','INTJ','ISTJ','INFJ']},
-  {codes:['A','I'],name:'UX/UI 设计师',icon:'🎨',desc:'设计数字产品的用户体验，平衡美观与功能，提升用户满意度。',tags:['设计','创意','用户研究'],match:92,mbtiBoost:['INFP','ISFP','ENFP','INTP']},
-  {codes:['A','S'],name:'内容创作者 / 创意总监',icon:'✍️',desc:'创作文字、视频或视觉内容，表达创意理念，打造品牌故事。',tags:['创意','表达','媒体'],match:87,mbtiBoost:['ENFP','INFP','ESFP','ISFP']},
-  {codes:['S','E'],name:'企业培训师 / HR',icon:'🤝',desc:'负责员工培训、组织发展，帮助人才成长，推动企业文化建设。',tags:['培训','沟通','管理'],match:85,mbtiBoost:['ENFJ','ESFJ','INFJ','ENTJ']},
-  {codes:['S','A'],name:'心理咨询师 / 治疗师',icon:'🧠',desc:'通过专业对话和干预帮助个体处理心理困扰，改善心理健康。',tags:['倾听','共情','助人'],match:89,mbtiBoost:['INFJ','INFP','ENFJ','ISFJ']},
-  {codes:['E','S'],name:'市场营销 / 品牌经理',icon:'📣',desc:'制定品牌策略，管理市场推广活动，建立品牌认知和用户忠诚度。',tags:['策略','创意','商业'],match:86,mbtiBoost:['ENFP','ENTP','ESTJ','ENTJ']},
-  {codes:['E','I'],name:'创业者 / 产品经理',icon:'🚀',desc:'识别市场机会，规划产品路线图，协调团队将想法转化为产品。',tags:['创业','领导','策略'],match:91,mbtiBoost:['ENTJ','ENTP','INTJ','ENFP']},
-  {codes:['E','C'],name:'商业分析师 / 咨询顾问',icon:'📈',desc:'为企业提供战略建议，分析业务问题，提出可落地的解决方案。',tags:['分析','咨询','商业'],match:88,mbtiBoost:['ENTJ','ESTJ','INTJ','ISTJ']},
-  {codes:['C','I'],name:'会计师 / 财务分析师',icon:'💰',desc:'负责财务数据处理、分析和报告，确保财务合规，支持财务决策。',tags:['财务','精确','分析'],match:84,mbtiBoost:['ISTJ','ISFJ','ESTJ','INTJ']},
-  {codes:['C','E'],name:'项目经理 / 运营管理',icon:'📋',desc:'规划协调项目资源，控制进度与风险，确保项目按时保质完成。',tags:['规划','协调','管理'],match:86,mbtiBoost:['ESTJ','ISTJ','ENTJ','INTJ']},
-  {codes:['R','E'],name:'工程师 / 建筑师',icon:'🏗️',desc:'设计和监督建筑、基础设施或机械系统的建造，将蓝图变为现实。',tags:['设计','技术','实践'],match:87,mbtiBoost:['ISTP','ISTJ','INTJ','ESTJ']},
-  {codes:['A','E'],name:'广告创意 / 导演',icon:'🎬',desc:'指导广告片、电影或媒体项目，将创意愿景落地为视觉作品。',tags:['导演','创意','媒体'],match:85,mbtiBoost:['ENFP','ENTP','INFP','ESFP']},
-  {codes:['S','C'],name:'教师 / 教育工作者',icon:'📚',desc:'在学校或培训机构教授知识，引导学生成长，传播知识与价值观。',tags:['教育','耐心','沟通'],match:88,mbtiBoost:['ISFJ','INFJ','ENFJ','ESFJ']},
-  {codes:['I','A'],name:'科技作家 / 内容策略师',icon:'📝',desc:'将复杂技术或学术知识转化为易于理解的内容，面向大众传播。',tags:['写作','研究','传播'],match:83,mbtiBoost:['INTP','INFP','INTJ','INFJ']},
+
+  /* ── 科技 · 工程 ── */
+  {codes:['I','R'],name:'AI 工程师 / 大模型训练师',icon:'🤖',
+   desc:'研发和训练大规模人工智能模型，优化算法，推动 AI 产品从实验室走向落地。',
+   tags:['AI','深度学习','算法'],match:97,hot:true,
+   mbtiBoost:['INTJ','INTP','ISTP','ISTJ','ENTP']},
+
+  {codes:['R','I'],name:'软件工程师 / 全栈开发者',icon:'💻',
+   desc:'设计、编写和维护软件系统，覆盖前后端与基础架构，构建可靠的数字产品。',
+   tags:['编程','系统设计','工程'],match:95,
+   mbtiBoost:['INTJ','INTP','ISTJ','ISTP','ENTP']},
+
+  {codes:['I','R'],name:'芯片设计工程师',icon:'⚙️',
+   desc:'设计集成电路和半导体芯片，是硬科技和制造业的核心岗位，需求持续增长。',
+   tags:['硬件','EDA','半导体'],match:90,hot:true,
+   mbtiBoost:['INTJ','ISTJ','INTP','ISTP']},
+
+  {codes:['I','R'],name:'网络安全工程师',icon:'🔐',
+   desc:'识别和防范数字威胁，保护系统和数据安全，在数字化浪潮中需求极为旺盛。',
+   tags:['安全','渗透测试','防护'],match:91,hot:true,
+   mbtiBoost:['INTJ','ISTP','ISTJ','INTP']},
+
+  {codes:['R','I'],name:'机器人 / 自动化工程师',icon:'🦾',
+   desc:'设计和开发工业机器人与自动化系统，推动制造业和物流业的智能化转型。',
+   tags:['机器人','自动化','硬件'],match:89,hot:true,
+   mbtiBoost:['ISTP','ISTJ','INTJ','INTP']},
+
+  {codes:['R','I'],name:'新能源工程师',icon:'⚡',
+   desc:'从事光伏、风电、储能、氢能等清洁能源领域的研发、设计与系统集成工作。',
+   tags:['新能源','碳中和','工程'],match:88,hot:true,
+   mbtiBoost:['ISTJ','ISTP','INTJ','ESTJ']},
+
+  {codes:['R','I'],name:'航天 / 航空工程师',icon:'🚀',
+   desc:'参与飞行器、卫星或火箭的设计与研发，是国家战略性新兴产业的重要力量。',
+   tags:['航天','力学','精密工程'],match:87,
+   mbtiBoost:['INTJ','ISTJ','ISTP','INTP']},
+
+  /* ── 数据 · 分析 ── */
+  {codes:['I','R'],name:'数据科学家 / 算法工程师',icon:'📊',
+   desc:'利用机器学习和统计方法从海量数据中提取洞见，驱动产品和商业决策。',
+   tags:['数据','统计','建模'],match:93,
+   mbtiBoost:['INTP','INTJ','ISTJ','ENTJ']},
+
+  {codes:['I','C'],name:'量化交易员 / 金融数据科学家',icon:'📉',
+   desc:'利用数学模型和算法在金融市场寻找交易机会，是金融与科技深度融合的前沿职业。',
+   tags:['量化','金融','编程'],match:91,hot:true,
+   mbtiBoost:['INTJ','INTP','ISTJ','ENTJ']},
+
+  {codes:['I','S'],name:'用户研究员 / 体验研究专家',icon:'🔍',
+   desc:'通过访谈、实验和数据分析深入理解用户行为，为产品设计提供洞察。',
+   tags:['用研','访谈','数据'],match:87,
+   mbtiBoost:['INFJ','INTP','INTJ','INFP']},
+
+  /* ── 设计 · 创意 ── */
+  {codes:['A','I'],name:'UX/UI 设计师',icon:'🎨',
+   desc:'设计数字产品的用户体验，平衡美观与功能，让产品更易用、更具吸引力。',
+   tags:['设计','创意','用户研究'],match:92,
+   mbtiBoost:['INFP','ISFP','ENFP','INTP']},
+
+  {codes:['A','I'],name:'游戏设计师 / 关卡设计师',icon:'🎮',
+   desc:'设计游戏玩法、世界观和关卡体验，是创意与技术结合的热门方向。',
+   tags:['游戏','创意','叙事'],match:89,hot:true,
+   mbtiBoost:['INTP','INTJ','INFP','ENFP']},
+
+  {codes:['A','E'],name:'短视频导演 / 创意总监',icon:'🎬',
+   desc:'策划和制作短视频、广告或纪录片内容，在内容经济时代拥有广泛的商业价值。',
+   tags:['导演','创意','制作'],match:88,hot:true,
+   mbtiBoost:['ENFP','ENTP','INFP','ESFP']},
+
+  {codes:['A','S'],name:'播客主持人 / 独立创作者',icon:'🎙️',
+   desc:'通过音频、视频或图文持续输出有价值的内容，建立个人品牌和忠实受众。',
+   tags:['创作','表达','社群'],match:85,hot:true,
+   mbtiBoost:['ENFP','INFP','ENTP','ENFJ']},
+
+  {codes:['A','S'],name:'内容策略师 / 品牌编辑',icon:'✍️',
+   desc:'规划内容生态和叙事方向，通过文字与创意为品牌建立独特的声音和影响力。',
+   tags:['文案','品牌','策略'],match:86,
+   mbtiBoost:['INFP','ENFP','INFJ','ISFP']},
+
+  /* ── 商业 · 管理 ── */
+  {codes:['E','I'],name:'创业者 / AI 产品经理',icon:'💡',
+   desc:'识别市场机会，规划产品路线图，尤其是结合 AI 能力打造下一代产品的核心角色。',
+   tags:['创业','产品','AI应用'],match:94,hot:true,
+   mbtiBoost:['ENTJ','ENTP','INTJ','ENFP']},
+
+  {codes:['E','C'],name:'商业分析师 / 战略咨询顾问',icon:'📈',
+   desc:'为企业提供战略建议，分析业务问题，在顶级咨询公司或大厂战略部门发挥影响。',
+   tags:['战略','分析','咨询'],match:90,
+   mbtiBoost:['ENTJ','ESTJ','INTJ','ISTJ']},
+
+  {codes:['E','S'],name:'市场营销 / 增长运营',icon:'📣',
+   desc:'制定品牌策略和用户增长方案，通过数据驱动的方式实现业务规模化扩张。',
+   tags:['增长','营销','数据'],match:87,
+   mbtiBoost:['ENFP','ENTP','ESTJ','ENTJ']},
+
+  {codes:['E','C'],name:'跨境电商运营 / 供应链经理',icon:'🌐',
+   desc:'拓展全球市场，管理从生产到末端配送的完整供应链，是对外贸易的新兴核心岗位。',
+   tags:['跨境','运营','供应链'],match:85,hot:true,
+   mbtiBoost:['ESTJ','ENTJ','ISTJ','ESTP']},
+
+  {codes:['C','E'],name:'项目经理 / PMO',icon:'📋',
+   desc:'规划协调项目资源，控制进度与风险，确保跨团队协作高效推进。',
+   tags:['管理','规划','协调'],match:86,
+   mbtiBoost:['ESTJ','ISTJ','ENTJ','INTJ']},
+
+  /* ── 金融 · 法律 ── */
+  {codes:['C','I'],name:'会计师 / 审计师',icon:'💰',
+   desc:'负责财务数据处理、分析和报告，确保财务合规，在企业经营中扮演守门人角色。',
+   tags:['财务','合规','分析'],match:84,
+   mbtiBoost:['ISTJ','ISFJ','ESTJ','INTJ']},
+
+  {codes:['I','E'],name:'法律科技 / 合规专家',icon:'⚖️',
+   desc:'结合法律专业知识与科技工具，为企业提供合规风控服务，是传统法律的新兴进化方向。',
+   tags:['法律','合规','科技'],match:87,hot:true,
+   mbtiBoost:['INTJ','ISTJ','ENTJ','INFJ']},
+
+  /* ── 医疗 · 科学 ── */
+  {codes:['I','R'],name:'生物信息学家 / 基因工程师',icon:'🧬',
+   desc:'运用计算方法分析基因组数据，推动精准医疗、药物研发和生命科学进步。',
+   tags:['基因','生信','生物技术'],match:91,hot:true,
+   mbtiBoost:['INTJ','INTP','ISTJ','INFJ']},
+
+  {codes:['I','S'],name:'医疗 AI 专家 / 数字健康产品经理',icon:'🏥',
+   desc:'将人工智能应用于医学影像、辅助诊断和医疗信息化，推动医疗行业数智化转型。',
+   tags:['医疗','AI','产品'],match:90,hot:true,
+   mbtiBoost:['INTJ','INTP','INFJ','ISTJ']},
+
+  {codes:['S','A'],name:'心理咨询师 / 叙事治疗师',icon:'🧠',
+   desc:'通过专业对话和循证方法帮助个体处理心理困扰，随着社会对心理健康重视度提升需求旺盛。',
+   tags:['倾听','共情','助人'],match:89,
+   mbtiBoost:['INFJ','INFP','ENFJ','ISFJ']},
+
+  /* ── 可持续 · 社会 ── */
+  {codes:['I','S'],name:'ESG 顾问 / 碳中和规划师',icon:'🌱',
+   desc:'帮助企业制定可持续发展战略，推动碳减排和 ESG 信息披露，是 2026 年高需求新兴职业。',
+   tags:['ESG','可持续','碳中和'],match:88,hot:true,
+   mbtiBoost:['INFJ','INFP','ENFJ','INTJ']},
+
+  {codes:['S','I'],name:'职业规划师 / 生涯咨询师',icon:'🧭',
+   desc:'通过科学评估和深度对话帮助个体厘清职业方向，在不确定时代需求持续增长。',
+   tags:['咨询','成长','助人'],match:87,
+   mbtiBoost:['INFJ','ENFJ','ISFJ','INFP']},
+
+  {codes:['S','C'],name:'教师 / 在线教育创作者',icon:'📚',
+   desc:'在学校或数字平台传播知识，结合课程设计和内容创作，影响更广泛的学习者群体。',
+   tags:['教育','耐心','设计'],match:88,
+   mbtiBoost:['ISFJ','INFJ','ENFJ','ESFJ']},
+
+  {codes:['S','E'],name:'企业培训师 / 组织发展顾问',icon:'🤝',
+   desc:'推动组织能力建设和人才培养，在企业文化和员工效能方面创造持续价值。',
+   tags:['培训','OD','管理'],match:85,
+   mbtiBoost:['ENFJ','ESFJ','INFJ','ENTJ']},
+
+  {codes:['S','A'],name:'老龄服务设计师 / 适老化产品经理',icon:'🤲',
+   desc:'为银发群体设计产品和服务体验，是人口老龄化背景下快速崛起的蓝海职业方向。',
+   tags:['服务设计','老龄化','包容性'],match:84,hot:true,
+   mbtiBoost:['ISFJ','INFJ','ENFJ','ESFJ']},
+
+  /* ── 新兴 · 跨界 ── */
+  {codes:['I','A'],name:'提示词工程师 / AI 应用设计师',icon:'✨',
+   desc:'设计和优化与 AI 系统的交互方式，是生成式 AI 时代诞生的全新职业。',
+   tags:['AI','提示工程','产品'],match:89,hot:true,
+   mbtiBoost:['INTP','ENTP','INFP','INTJ']},
+
+  {codes:['A','R'],name:'电竞职业选手 / 游戏教练',icon:'🕹️',
+   desc:'在专业赛事中竞技或担任战术指导，随着电竞产业成熟化已发展为成熟职业赛道。',
+   tags:['电竞','竞技','策略'],match:82,hot:true,
+   mbtiBoost:['ISTP','ESTP','ENTP','ENTJ']},
+
+  {codes:['A','E'],name:'虚拟数字人制作人 / XR 内容创作者',icon:'🥽',
+   desc:'创作 AR/VR/XR 沉浸式体验或数字虚拟人内容，处于元宇宙与实体经济融合的前沿。',
+   tags:['XR','3D','数字内容'],match:86,hot:true,
+   mbtiBoost:['INFP','ENFP','INTP','ISFP']},
+
+  {codes:['I','A'],name:'科技作家 / 知识 IP 运营者',icon:'📝',
+   desc:'将前沿科技或专业领域知识转化为大众可理解的内容，在知识经济时代建立个人影响力。',
+   tags:['写作','研究','传播'],match:85,
+   mbtiBoost:['INTP','INFP','INTJ','INFJ']},
+
+  {codes:['R','E'],name:'建筑师 / 绿色建筑设计师',icon:'🏗️',
+   desc:'设计建筑空间与结构，尤其是结合低碳理念的绿色建筑设计，将成为行业主流。',
+   tags:['建筑','设计','绿色'],match:87,
+   mbtiBoost:['INTJ','ISTP','ISTJ','INFJ']},
 ];
 
 /* ══════════════════════════════════════
@@ -929,7 +1097,7 @@ function getMatchedCareers(topDims){
     const mbtiMatched = selectedMBTI && c.mbtiBoost && c.mbtiBoost.includes(selectedMBTI);
     if(mbtiMatched) score+=2;
     return {...c, matchScore:score, mbtiMatched};
-  }).sort((a,b)=>b.matchScore-a.matchScore).slice(0,9);
+  }).sort((a,b)=>b.matchScore-a.matchScore).slice(0,12);
 }
 
 function renderResult(norm, riasec, sorted, topDims){
@@ -1066,6 +1234,7 @@ function renderResult(norm, riasec, sorted, topDims){
           <div class="career-desc">${c.desc}</div>
           <div class="career-tags">
             ${c.tags.map(t=>`<span class="career-tag">${t}</span>`).join('')}
+            ${c.hot?`<span class="career-tag hot-tag">🔥 2026热门</span>`:''}
             ${c.mbtiMatched?`<span class="career-tag mbti-boost-tag">${selectedMBTI} 契合</span>`:''}
           </div>
         </div>`).join('')}
